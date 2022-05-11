@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { UserCard, SearchBar } from "./components";
 
-function App() {
+const App = () => {
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  useEffect(() => {
+    getInfo();
+  }, []);
+
+  const getInfo = async () => {
+    const resp = await fetch("https://randomuser.me/api/?results=15");
+    const { results } = await resp.json();
+    setUsers(results);
+    setFilteredUsers(results);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h2>Perfil de usuarios</h2>
+
+      <SearchBar users={users} setFilteredUsers={setFilteredUsers} />
+
+      <div className="userList">
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user, i) => (
+            <UserCard
+              key={i}
+              user={user}
+              users={users}
+              setUsers={setUsers}
+              setFilteredUsers={setFilteredUsers}
+            />
+          ))
+        ) : (
+          <h5>No existen usuarios para mostrar</h5>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
